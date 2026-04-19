@@ -3,6 +3,8 @@ import json
 import glob
 import matplotlib.pyplot as plt
 
+from src.config import LOG_DIR, RESULTS_DIR
+
 
 def load_logs(log_dir="logs"):
     log_files = glob.glob(os.path.join(log_dir, "*.json"))
@@ -63,11 +65,7 @@ def plot_metrics(data, save_dir="experiments/results"):
 
 
 if __name__ == "__main__":
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(current_dir)
-    logs_path = os.path.join(project_root, "tests", "logs")
-    logs_data = load_logs(log_dir=logs_path)
-
+    logs_data = load_logs(log_dir=LOG_DIR)
     if logs_data:
-        plot_metrics(logs_data)
+        plot_metrics(logs_data, save_dir=RESULTS_DIR)
         print("Visualization completed!")
