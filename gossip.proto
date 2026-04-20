@@ -1,0 +1,17 @@
+syntax = "proto3";
+package gossip;
+
+service GossipNode {
+  rpc ExchangeWeights (WeightMessage) returns (ExchangeReply);
+}
+
+message WeightMessage {
+  int32 node_id = 1;
+  bytes model_weights = 2;
+  float accuracy = 3;
+}
+
+message ExchangeReply {
+  bool success = 1;
+  bytes averaged_weights = 2;
+}

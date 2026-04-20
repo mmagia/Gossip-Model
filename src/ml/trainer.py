@@ -28,6 +28,7 @@ class DecentralizedTrainer:
 
         self.global_step = 0
         self.current_epoch = 0
+        self.current_accuracy = 0.0
 
     # Performs num_batches of training steps on local data
     def train_step(self, num_batches=1):
@@ -72,6 +73,7 @@ class DecentralizedTrainer:
 
         avg_loss = test_loss / len(self.test_loader)
         accuracy = 100. * correct / len(self.test_loader.dataset)
+        self.current_accuracy = accuracy
 
         # Write results in logger (for DevOps)
         self.logger.log_step(
@@ -87,8 +89,18 @@ class DecentralizedTrainer:
     def get_weights(self):
         return {k: v.cpu().clone() for k, v in self.model.state_dict().items()}
 
-    def aggregate_weights(self, peer_weights, alpha=0.5):
-        mse_value = calculate_mse(self.model.state_dict(), peer_weights)
-        # print(f"Node {self.node_id}: Divergence (MSE) with peer: {mse_value:.6f}")
-        new_weights = aggregate(self.model, peer_weights, alpha=alpha)
+    def aggregate_weights(self, peer_weights, peer_acc):
+        my_acc = self.current_accuracy
+
+        if peer_acc > my_acc:
+            alpha = 0.5
+        else:
+            alpha = max(0.05, 0.5 - (my_acc - peer_acc) / 100.0)
+
+        peer_weights_on_device = {k: v.to(self.device) for k, v in peer_weights.items()}
+
+        new_weights = aggregate(self.model, peer_weights_on_device, alpha=alpha)
+
         self.model.load_state_dict(new_weights)
+
+        return {k: v.cpu().clone() for k, v in new_weights.items()}
