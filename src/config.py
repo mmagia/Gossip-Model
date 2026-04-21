@@ -23,3 +23,21 @@ RESULTS_DIR = os.path.join(ROOT_DIR, "experiments", "results")
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEED = 42
+
+
+GOSSIP_INTERVAL = 3.0
+
+GOSSIP_JITTER_MIN = -0.4
+GOSSIP_JITTER_MAX = 0.4
+
+PACKET_LOSS_PROB = 0.05
+
+OUTGOING_DELAY_MIN = 0.03
+OUTGOING_DELAY_MAX = 0.20
+
+ENABLE_SLOW_NODE = True
+SLOW_NODE_ID = 2
+SLOW_NODE_EXTRA_DELAY_MIN = 0.15
+SLOW_NODE_EXTRA_DELAY_MAX = 0.45
+
+GRPC_TIMEOUT = 5.0
