@@ -4,6 +4,7 @@ import time
 from src.ml.trainer import DecentralizedTrainer
 from src.network.node import Node
 from src.ml.dataset import get_dataloader
+from src.config import GOSSIP_INTERVAL
 
 
 def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
@@ -26,7 +27,7 @@ def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
         ml_model=ml_model
     )
 
-    node.run(gossip_interval=3)
+    node.run(gossip_interval=GOSSIP_INTERVAL)
 
 
 if __name__ == "__main__":
