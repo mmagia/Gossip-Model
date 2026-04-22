@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader, Subset
 import numpy as np
 from collections import Counter
 import os
-from src.config import BATCH_SIZE, NUM_NODES, DATA_PATH
+from config import BATCH_SIZE, NUM_NODES, DATA_PATH
 
 
 def get_dataloader(node_id, num_nodes=NUM_NODES, batch_size=BATCH_SIZE, is_train=True, data_path=DATA_PATH):

@@ -1,0 +1,106 @@
+version: '3.8'
+
+# Define custom network for container-to-container communication
+networks:
+  gossip-net:
+    driver: bridge
+
+services:
+  # Node 0 - first peer
+  node0:
+    build: .                                    # Build from Dockerfile in current dir
+    container_name: gossip_node0               # Fixed container name for reliable DNS
+    environment:
+      - NODE_ID=0                               # Node identifier (affects data split)
+      - PORT=50051                              # gRPC listening port
+      - PEERS=node1:50052,node2:50053,node3:50054,node4:50055  # Comma-separated peer list
+      - NUM_NODES=5                             # Total number of nodes in the system
+    ports:
+      - "50051:50051"                           # Map host port to container port
+    volumes:
+      - ./logs:/app/logs                        # Mount logs directory (persist logs)
+      - ./experiments:/app/experiments          # Mount experiments (save plots)
+      - ./data:/app/data                        # Mount data directory (MNIST cache)
+    networks:
+      - gossip-net
+    restart: unless-stopped                     # Auto-restart if crashes (optional)
+
+  # Node 1
+  node1:
+    build: .
+    container_name: gossip_node1
+    environment:
+      - NODE_ID=1
+      - PORT=50052
+      - PEERS=node0:50051,node2:50053,node3:50054,node4:50055
+      - NUM_NODES=5
+    ports:
+      - "50052:50052"
+    volumes:
+      - ./logs:/app/logs
+      - ./experiments:/app/experiments
+      - ./data:/app/data
+    networks:
+      - gossip-net
+    depends_on:
+      - node0                                 # Start node0 first (no strict need, but safe)
+
+  # Node 2 (slow node - as configured in config.py)
+  node2:
+    build: .
+    container_name: gossip_node2
+    environment:
+      - NODE_ID=2
+      - PORT=50053
+      - PEERS=node0:50051,node1:50052,node3:50054,node4:50055
+      - NUM_NODES=5
+    ports:
+      - "50053:50053"
+    volumes:
+      - ./logs:/app/logs
+      - ./experiments:/app/experiments
+      - ./data:/app/data
+    networks:
+      - gossip-net
+    depends_on:
+      - node0
+
+  # Node 3
+  node3:
+    build: .
+    container_name: gossip_node3
+    environment:
+      - NODE_ID=3
+      - PORT=50054
+      - PEERS=node0:50051,node1:50052,node2:50053,node4:50055
+      - NUM_NODES=5
+    ports:
+      - "50054:50054"
+    volumes:
+      - ./logs:/app/logs
+      - ./experiments:/app/experiments
+      - ./data:/app/data
+    networks:
+      - gossip-net
+    depends_on:
+      - node0
+
+  # Node 4
+  node4:
+    build: .
+    container_name: gossip_node4
+    environment:
+      - NODE_ID=4
+      - PORT=50055
+      - PEERS=node0:50051,node1:50052,node2:50053,node3:50054
+      - NUM_NODES=5
+    ports:
+      - "50055:50055"
+    volumes:
+      - ./logs:/app/logs
+      - ./experiments:/app/experiments
+      - ./data:/app/data
+    networks:
+      - gossip-net
+    depends_on:
+      - node0

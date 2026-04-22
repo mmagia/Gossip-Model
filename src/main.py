@@ -1,18 +1,20 @@
+import os
 import multiprocessing as mp
 import time
-
-from src.ml.trainer import DecentralizedTrainer
-from src.network.node import Node
-from src.ml.dataset import get_dataloader
-from src.config import GOSSIP_INTERVAL
-
+from ml.trainer import DecentralizedTrainer
+from network.node import Node
+from ml.dataset import get_dataloader
+from config import GOSSIP_INTERVAL
 
 def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
-    print(f"Запускается Узел {node_id} (Порт: {port}). Соседи: {peers}")
+    """Launch a single node process with its own data, model, and gossip loop."""
+    print(f"Starting Node {node_id} | port {port} | peers: {peers}")
 
+    # Load Non-IID data splits (each node sees only subset of digit classes)
     train_loader = get_dataloader(node_id=node_id, num_nodes=num_nodes, is_train=True)
     test_loader = get_dataloader(node_id=node_id, num_nodes=num_nodes, is_train=False)
 
+    # Initialize local model trainer
     ml_model = DecentralizedTrainer(
         node_id=node_id,
         train_loader=train_loader,
@@ -20,6 +22,7 @@ def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
         lr=0.01
     )
 
+    # Create gossip node with gRPC server/client logic
     node = Node(
         node_id=node_id,
         port=port,
@@ -27,44 +30,29 @@ def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
         ml_model=ml_model
     )
 
+    # Start infinite training + gossip loop
     node.run(gossip_interval=GOSSIP_INTERVAL)
 
-
 if __name__ == "__main__":
+    # Force 'spawn' method for multiprocessing (required on some OSes)
     mp.set_start_method('spawn', force=True)
 
-    node_configs = [
-        {"id": 0, "port": "50051"},
-        {"id": 1, "port": "50052"},
-        {"id": 2, "port": "50053"},
-        {"id": 3, "port": "50054"},
-        {"id": 4, "port": "50055"},
-    ]
+    # Read configuration from environment variables (set by Docker)
+    node_id = int(os.environ.get("NODE_ID", 0))
+    port = os.environ.get("PORT", "50051")
+    peers_str = os.environ.get("PEERS", "")
+    
+    if peers_str:
+        # Parse comma-separated peer list: "node1:50052,node2:50053" -> list
+        peers = peers_str.split(",")
+    else:
+        # Fallback for local non-Docker execution
+        all_ports = ["50051", "50052", "50053", "50054", "50055"]
+        peers = [f"localhost:{p}" for p in all_ports if p != port]
 
-    processes = []
-    try:
-        for config in node_configs:
-            my_id = config["id"]
-            my_port = config["port"]
+    num_nodes = int(os.environ.get("NUM_NODES", 5))
 
-            my_peers = [f"localhost:{c['port']}" for c in node_configs if c["id"] != my_id]
-            p = mp.Process(
-                target=run_node_process,
-                args=(my_id, my_port, my_peers, len(node_configs))
-            )
-            p.start()
-            processes.append(p)
+    print(f"[Main] Node {node_id} starting with PORT={port}, PEERS={peers}")
 
-            time.sleep(3)
-
-        print("\nВСЕ 5 НОД ЗАПУЩЕНЫ!\n" + "-" * 50)
-
-        for p in processes:
-            p.join()
-
-
-    except KeyboardInterrupt:
-        print("\nПолучен сигнал остановки (Ctrl+C). Ждем, пока узлы подведут итоги...")
-        for p in processes:
-            p.join()
-        print("Сеть успешно отключена. Все данные сохранены.")
+    # Launch the node process
+    run_node_process(node_id, port, peers, num_nodes)

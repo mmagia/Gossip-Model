@@ -3,8 +3,7 @@ import os
 import torch
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-from src.ml.dataset import get_dataloader
+from ml.dataset import get_dataloader  
 
 def test_non_iid_distribution():
     num_nodes = 5

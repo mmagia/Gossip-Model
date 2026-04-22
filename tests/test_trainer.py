@@ -2,13 +2,12 @@ import os
 import sys
 import torch
 
-# Добавляем путь к папке src, чтобы импорты работали корректно
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-from src.ml.trainer import DecentralizedTrainer
-from src.ml.model import set_seed
-from src.ml.dataset import get_dataloader
-from src.ml.aggregator import calculate_mse
+from ml.trainer import DecentralizedTrainer
+from ml.model import set_seed
+from ml.dataset import get_dataloader
+from ml.aggregator import calculate_mse
 
 
 def run_full_integration_test():
@@ -20,8 +19,7 @@ def run_full_integration_test():
     num_nodes = 2
     batch_size = 32
 
-    # 2. Prepare Non-IID Data (Пункт 4 вашего задания)
-    # Node 0 gets classes 0-4, Node 1 gets classes 5-9
+    # 2. Prepare Non-IID Data
     print("📦 Loading Non-IID datasets...")
     train_loader_0 = get_dataloader(node_id=0, num_nodes=num_nodes, batch_size=batch_size, is_train=True)
     train_loader_1 = get_dataloader(node_id=1, num_nodes=num_nodes, batch_size=batch_size, is_train=True)
@@ -51,9 +49,8 @@ def run_full_integration_test():
     print(f"After Local Training:")
     print(f"Node 0 (knows 0-4): {acc_0_trained:.2f}%")
     print(f"Node 1 (knows 5-9): {acc_1_trained:.2f}%")
-    # Accuracy should be around 50% because they only know half the digits
 
-    # 6. Gossip Exchange (The Magic Moment)
+    # 6. Gossip Exchange
     print("\n📡 Performing Gossip Weight Aggregation...")
 
     # Calculate Divergence (MSE) before swap
@@ -62,10 +59,14 @@ def run_full_integration_test():
     initial_mse = calculate_mse(w0, w1)
     print(f"Initial Model Divergence (MSE): {initial_mse:.6f}")
 
+    # Получаем текущие точности для обмена
+    current_acc_0 = node_0.current_accuracy
+    current_acc_1 = node_1.current_accuracy
+
     # Node 0 receives weights from Node 1
-    node_0.aggregate_weights(w1, alpha=0.5)
+    node_0.aggregate_weights(w1, current_acc_1)  # Исправлено: передаем peer_acc
     # Node 1 receives weights from Node 0
-    node_1.aggregate_weights(w0, alpha=0.5)
+    node_1.aggregate_weights(w0, current_acc_0)  # Исправлено: передаем peer_acc
 
     # 7. Final Evaluation
     print("\n📊 Evaluation after Gossip Exchange:")
@@ -87,18 +88,22 @@ def run_full_integration_test():
     if final_mse < initial_mse:
         print("✅ SUCCESS: Models converged (MSE decreased)!")
 
-
     print("\n🔄 Запуск серии обменов для генерации истории логов...")
-    for i in range(3):  # Сделаем 3 цикла "учеба + обмен"
+    for i in range(3):
         node_0.train_step(num_batches=20)
         node_1.train_step(num_batches=20)
 
         # Обмениваемся весами
         w0 = node_0.get_weights()
         w1 = node_1.get_weights()
+        
+        # Получаем текущие точности
+        acc_0 = node_0.current_accuracy
+        acc_1 = node_1.current_accuracy
 
-        node_0.aggregate_weights(w1, alpha=0.3)  # Берем чуть меньше от соседа
-        node_1.aggregate_weights(w0, alpha=0.3)
+        # Исправлено: передаем peer_acc, а не alpha
+        node_0.aggregate_weights(w1, acc_1)
+        node_1.aggregate_weights(w0, acc_0)
 
         # Записываем состояние в логи
         node_0.evaluate()

@@ -1,9 +1,11 @@
 import os
+import sys
 import json
 import glob
 import matplotlib.pyplot as plt
 
-from src.config import LOG_DIR, RESULTS_DIR
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import LOG_DIR, RESULTS_DIR
 
 
 def load_logs(log_dir="logs"):

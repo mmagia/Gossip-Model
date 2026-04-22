@@ -8,8 +8,8 @@ import io
 
 import gossip_pb2
 import gossip_pb2_grpc
-from src.network.gossip_servicer import GossipServicer
-from src.config import (
+from network.gossip_servicer import GossipServicer
+from config import (
     GOSSIP_JITTER_MIN,
     GOSSIP_JITTER_MAX,
     PACKET_LOSS_PROB,

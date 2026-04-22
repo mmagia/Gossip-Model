@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import random
 import numpy as np
-from src.config import SEED
+from config import SEED
 
 
 # Lightweight convolutional neural network for image classification (MNIST)

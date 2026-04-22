@@ -1,8 +1,13 @@
+import sys
+import os
 import torch
 import unittest
 
-from src.ml.aggregator import aggregate, calculate_mse
-from src.ml.model import SimpleCNN
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
+from ml.aggregator import aggregate, calculate_mse
+from ml.model import SimpleCNN
 
 
 class TestAggregator(unittest.TestCase):

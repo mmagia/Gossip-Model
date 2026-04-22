@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from src.ml.model import SimpleCNN
-from src.utils.logger import MetricsLogger
-from src.ml.aggregator import aggregate, calculate_mse
-from src.config import LEARNING_RATE, MOMENTUM, DEVICE, LOG_DIR
+from ml.model import SimpleCNN
+from utils.logger import MetricsLogger
+from ml.aggregator import aggregate, calculate_mse
+from config import LEARNING_RATE, MOMENTUM, DEVICE, LOG_DIR
 
 
 class DecentralizedTrainer:
@@ -89,7 +89,7 @@ class DecentralizedTrainer:
     def get_weights(self):
         return {k: v.cpu().clone() for k, v in self.model.state_dict().items()}
 
-    def aggregate_weights(self, peer_weights, peer_acc):
+    def aggregate_weights(self, peer_weights, peer_acc, alpha=None):
         my_acc = self.current_accuracy
 
         if peer_acc > my_acc:
