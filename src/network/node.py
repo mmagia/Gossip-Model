@@ -42,7 +42,6 @@ class Node:
         self.total_delay_time = 0.0
 
     def start_server(self):
-        """Инициализация и запуск gRPC сервера"""
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
         gossip_pb2_grpc.add_GossipNodeServicer_to_server(
@@ -53,45 +52,28 @@ class Node:
         self.server.add_insecure_port(address)
 
         self.server.start()
-        print(f"[{self.node_id}] 🟢 gRPC сервер запущен на {address}")
 
     def stop_server(self):
         """Корректная остановка сервера"""
         if self.server:
-            print(f"[{self.node_id}] 🛑 Останавливаю сервер...")
             self.server.stop(0)
 
     def handle_incoming_gossip(self, peer_weights_dict, peer_accuracy):
-        """Метод, который вызывает GossipServicer при получении данных"""
         with self.model_lock:
             averaged_weights = self.model.aggregate_weights(peer_weights_dict, peer_accuracy)
             return averaged_weights
 
     def _get_next_gossip_interval(self, base_interval):
-        """
-        Добавляем небольшой случайный сдвиг интервала,
-        чтобы gossip-обмены происходили не идеально синхронно.
-        """
         jitter = random.uniform(GOSSIP_JITTER_MIN, GOSSIP_JITTER_MAX)
         interval = base_interval + jitter
 
-        # Не даем интервалу стать слишком маленьким
         return max(0.5, interval)
 
     def _should_drop_outgoing_message(self):
-        """
-        Имитация периодической потери пакета на отправке.
-        """
         return random.random() < PACKET_LOSS_PROB
 
     def _simulate_outgoing_delay(self, peer):
-        """
-        Имитация задержки перед отправкой gossip-запроса.
-        Делаем мягкой, чтобы обучение продолжало сходиться.
-        """
         delay = random.uniform(OUTGOING_DELAY_MIN, OUTGOING_DELAY_MAX)
-
-        # Одна нода может быть "медленной"
         if ENABLE_SLOW_NODE and self.node_id == SLOW_NODE_ID:
             delay += random.uniform(
                 SLOW_NODE_EXTRA_DELAY_MIN,
@@ -120,14 +102,6 @@ class Node:
         }
 
     def initiate_gossip(self):
-        """
-        Исходящий gossip-обмен:
-        1) выбираем случайного соседа,
-        2) иногда теряем пакет,
-        3) иногда ждем перед отправкой,
-        4) отправляем веса,
-        5) получаем усредненные веса обратно.
-        """
         if not self.peers:
             return
 
@@ -136,10 +110,9 @@ class Node:
 
         if self._should_drop_outgoing_message():
             self.lost_packets += 1
-            print(f"[Node {self.node_id}] 📦❌ Packet to {peer} was lost artificially")
+            print(f"[Node {self.node_id}] Packet to {peer} was lost artificially")
             return
 
-        # Искусственная задержка перед отправкой
         self._simulate_outgoing_delay(peer)
 
         with self.model_lock:
@@ -171,20 +144,16 @@ class Node:
                         self.model.model.load_state_dict(new_weights)
 
         except grpc.RpcError as e:
-            print(f"[Node {self.node_id}] Не удалось связаться с {peer}: статус {e.code().name}")
+            print(f"[Node {self.node_id}] Fail to connect with {peer}: status {e.code().name}")
 
     def run(self, gossip_interval=5):
-        """
-        Главный жизненный цикл узла.
-        Здесь совмещается обучение и периодический запуск gossip.
-        """
         self.start_server()
 
         last_gossip_time = time.time()
         next_gossip_interval = self._get_next_gossip_interval(gossip_interval)
 
         try:
-            print(f"[{self.node_id}] Начинаю цикл обучения...")
+            print(f"[{self.node_id}] Start trainig...)
             while True:
                 with self.model_lock:
                     loss = self.model.train_step(num_batches=1)
@@ -210,9 +179,8 @@ class Node:
                 time.sleep(0.05)
 
         except KeyboardInterrupt:
-            print(f"\n[Node {self.node_id}] Сигнал остановки! Считаю финальную точность на всем датасете...")
             with self.model_lock:
                 final_acc, final_loss = self.model.evaluate()
 
-            print(f"[Node {self.node_id}] ФИНАЛЬНЫЙ РЕЗУЛЬТАТ | Accuracy: {final_acc:.2f}% | Loss: {final_loss:.4f}")
+            print(f"[Node {self.node_id}] Final result | Accuracy: {final_acc:.2f}% | Loss: {final_loss:.4f}")
             self.stop_server()
