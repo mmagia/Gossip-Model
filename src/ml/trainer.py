@@ -5,6 +5,8 @@ from ml.model import SimpleCNN
 from utils.logger import MetricsLogger
 from ml.aggregator import aggregate, calculate_mse
 from config import LEARNING_RATE, MOMENTUM, DEVICE, LOG_DIR
+import matplotlib.pyplot as plt
+import os
 
 
 class DecentralizedTrainer:
@@ -29,6 +31,26 @@ class DecentralizedTrainer:
         self.global_step = 0
         self.current_epoch = 0
         self.current_accuracy = 0.0
+
+
+    def final_visual_check(self, image_tensor, label, target_digit, results_dir):
+        self.model.eval()
+        with torch.no_grad():
+            output = self.model(image_tensor.unsqueeze(0))
+            prediction = output.argmax(dim=1).item()
+
+        plt.figure(figsize=(5, 5))
+        plt.imshow(image_tensor.squeeze().numpy(), cmap='gray')
+
+        color = 'green' if prediction == label else 'red'
+        plt.title(f"Node ID: {self.node_id}\nTarget Digit: {target_digit}\nPredicted: {prediction}",
+                  fontsize=12, color=color)
+        plt.axis('off')
+
+        save_path = os.path.join(results_dir, f"final_check_node_{self.node_id}.png")
+        plt.savefig(save_path)
+        plt.close()
+        return prediction
 
     # Performs num_batches of training steps on local data
     def train_step(self, num_batches=1):

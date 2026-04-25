@@ -15,6 +15,7 @@ services:
       - PORT=50051                              # gRPC listening port
       - PEERS=node1:50052,node2:50053,node3:50054,node4:50055  # Comma-separated peer list
       - NUM_NODES=5                             # Total number of nodes in the system
+      - PYTHONUNBUFFERED=1
     ports:
       - "50051:50051"                           # Map host port to container port
     volumes:
@@ -25,6 +26,8 @@ services:
     networks:
       - gossip-net
     restart: unless-stopped                     # Auto-restart if crashes (optional)
+    tty: true
+    stdin_open: true
 
   # Repeat similar configuration for node2, node3, node4...
   # Note: node2 is often used to simulate a 'slow node' for delay testing
@@ -37,6 +40,7 @@ services:
       - PORT=50052
       - PEERS=node0:50051,node2:50053,node3:50054,node4:50055
       - NUM_NODES=5
+      - PYTHONUNBUFFERED=1
     ports:
       - "50052:50052"
     volumes:
@@ -47,6 +51,8 @@ services:
       - gossip-net
     depends_on:
       - node0                                 # Start node0 first (no strict need, but safe)
+    tty: true
+    stdin_open: true
 
   # Node 2 (slow node - as configured in config.py)
   node2:
@@ -57,6 +63,7 @@ services:
       - PORT=50053
       - PEERS=node0:50051,node1:50052,node3:50054,node4:50055
       - NUM_NODES=5
+      - PYTHONUNBUFFERED=1
     ports:
       - "50053:50053"
     volumes:
@@ -67,6 +74,8 @@ services:
       - gossip-net
     depends_on:
       - node0
+    tty: true
+    stdin_open: true
 
   # Node 3
   node3:
@@ -77,6 +86,7 @@ services:
       - PORT=50054
       - PEERS=node0:50051,node1:50052,node2:50053,node4:50055
       - NUM_NODES=5
+      - PYTHONUNBUFFERED=1
     ports:
       - "50054:50054"
     volumes:
@@ -87,6 +97,8 @@ services:
       - gossip-net
     depends_on:
       - node0
+    tty: true
+    stdin_open: true
 
   # Node 4
   node4:
@@ -97,6 +109,7 @@ services:
       - PORT=50055
       - PEERS=node0:50051,node1:50052,node2:50053,node3:50054
       - NUM_NODES=5
+      - PYTHONUNBUFFERED=1
     ports:
       - "50055:50055"
     volumes:
@@ -107,3 +120,5 @@ services:
       - gossip-net
     depends_on:
       - node0
+    tty: true
+    stdin_open: true
