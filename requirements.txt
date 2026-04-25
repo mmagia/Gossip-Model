@@ -1,7 +1,16 @@
+# Distributed computing and communication
 grpcio==1.60.0
 grpcio-tools==1.60.0
 protobuf==4.25.3
+
+# Data processing and math
 numpy==1.24.3
+
+# Visualization for QA and experiment analysis
+# [QA] Used by experiments/plot_results.py to generate convergence graphs
 matplotlib==3.10.8
+
+# Machine Learning framework (PyTorch)
+# [DevOps] Core dependency; ensures nodes can perform local training
 torch==2.0.1
 torchvision==0.15.2
