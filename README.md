@@ -31,6 +31,9 @@ Gossip-Model/
 ### Quick Start
 
 1. **Clone the repository:**
+```bash
+git clone git@github.com:mmagia/Gossip-Model.git
+```
 
 2. **Build and start all nodes:**
 ```bash
