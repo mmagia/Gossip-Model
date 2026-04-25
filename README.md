@@ -1,4 +1,5 @@
 This project implements a peer-to-peer (P2P) training system where multiple nodes collaborate to train a shared machine learning model without any central server. 5 nodes train locally to classify digits from 0-9, however each node learns only how to classify 2 digits and then exchange its knowledge by propagating weights through the network via gRPC protocol to other nodes.
+
 Thus every peer is able to classify the whole dataset, and its accuracy converges. Moreover, network problems are sumilated to check the concept in real world scenario: network delays and artificial packet losses were introduced. We also implemented centralized logging and containerized each node via Docker.
 
 ##  Key Features
@@ -40,6 +41,7 @@ git clone git@github.com:mmagia/Gossip-Model.git
 docker compose up --build
 ```
 Once in a while centalized logging will happen, and you will see the batches of information provided by nodes in your terminal.
+
 3. **After stopping the Docker Compose Containers containers plot the results in the diagrams:**
 ```bash
 python scripts/docker_collect.py
