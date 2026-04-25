@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 
-# A class for saving metrics (Loss, Accuracy) to a JSON file
-# Useful for devOps to take these files and draw graphs
+# Centralized metric collection for system validation and performance analysis
+# Used by DevOps to aggregate results from distributed nodes for plotting
 class MetricsLogger:
 
 
@@ -13,12 +13,14 @@ class MetricsLogger:
         self.log_dir = log_dir
         self.metrics = []
 
+        # Ensure the target directory exists for volume mounting in Docker
         os.makedirs(self.log_dir, exist_ok=True)
         self.filename = os.path.join(self.log_dir, f"node_{node_id}_metrics.json")
+        # Clean up old logs from previous runs to avoid data contamination
         if os.path.exists(self.filename):
             os.remove(self.filename)
 
-    # Adds a new entry and saves the file
+    # Records a snapshot of the current training state
     def log_step(self, epoch, global_step, loss, accuracy):
         entry = {
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -30,7 +32,7 @@ class MetricsLogger:
         self.metrics.append(entry)
         self._save()
 
-    # Overwrites the JSON file with the updated list of metrics
+    # Flushes metrics to disk in JSON format for external analysis tools
     def _save(self):
         with open(self.filename, 'w', encoding='utf-8') as f:
             json.dump(self.metrics, f, indent=4)
