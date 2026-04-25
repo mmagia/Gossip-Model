@@ -1,4 +1,4 @@
-This project implements a peer-to-peer (P2P) training system where multiple nodes collaborate to train a shared machine learning model without any central server.
+This project implements a peer-to-peer (P2P) training system where multiple nodes collaborate to train a shared machine learning model without any central server. 5 nodes train locally to classify digits from 0-9, however each node learns only how to classify 2 digits and then exchange its knowledge by propagating weights through the network via gRPC protocol to other nodes. Thus every peer is able to classify the whole dataset, and its accuracy converges. Moreover, network problems are sumilated to check the concept in real world scenario: network delays and artificial packet losses were introduced. We also implemented centralized logging and containerized each node via Docker.
 
 ##  Key Features
 * **Fully Decentralized:** No master node or central parameter server.
@@ -21,7 +21,7 @@ Gossip-Model/
 ```
 
 
-## Docker Deployment (5 Nodes)
+## Running the Project
 
 ### Prerequisites
 - Docker (≥ 20.10)
@@ -29,24 +29,15 @@ Gossip-Model/
 
 ### Quick Start
 
-1. **Build and start all nodes:**
+1. **Clone the repository:**
+
+2. **Build and start all nodes:**
 ```bash
 docker compose up --build
 ```
-2. **After stopping the Docker Compose Containers containers plot the results in the diagrams:**
+Once in a while centalized logging will happend, and you will see the batches of information provided by nodes in your terminal.
+3. **After stopping the Docker Compose Containers containers plot the results in the diagrams:**
 ```bash
 python scripts/docker_collect.py
-```
-
----
-
-
-## Running the Project
-
-### Visualization
-After training, generate convergence plots:
-```bash
-python experiments/plot_results.py
-python experiments/analyze_divergence.py
 ```
 *Graphs will be saved in `experiments/results/`.*
