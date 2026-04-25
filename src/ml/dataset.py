@@ -6,7 +6,7 @@ from collections import Counter
 import os
 from config import BATCH_SIZE, NUM_NODES, DATA_PATH
 
-
+#Helper function to load datasets
 def get_dataloader(node_id, num_nodes=NUM_NODES, batch_size=BATCH_SIZE, is_train=True, data_path=DATA_PATH):
     if not os.path.exists(data_path):
         os.makedirs(data_path, exist_ok=True)

@@ -22,7 +22,7 @@ from config import (
     GRPC_TIMEOUT,
 )
 
-
+#High level instance of Node which has both model which trains locally and server which handles incoming and outgoing network requests
 class Node:
     def __init__(self, node_id, port, peers, ml_model):
         self.node_id = node_id

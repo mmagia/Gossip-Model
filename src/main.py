@@ -34,7 +34,7 @@ def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
     node.run(gossip_interval=GOSSIP_INTERVAL)
 
 if __name__ == "__main__":
-    # Force 'spawn' method for multiprocessing (required on some OSes)
+    # Force 'spawn' method for multiprocessing
     mp.set_start_method('spawn', force=True)
 
     # Read configuration from environment variables (set by Docker)

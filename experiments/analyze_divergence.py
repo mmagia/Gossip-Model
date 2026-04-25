@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import LOG_DIR, RESULTS_DIR
 
-
+#Helper function to load nodes logs in json format
 def load_all_metrics(log_dir="logs"):
     log_files = glob.glob(os.path.join(log_dir, "*.json"))
     all_data = {}
@@ -18,7 +18,7 @@ def load_all_metrics(log_dir="logs"):
             all_data[node_name] = json.load(f)
     return all_data
 
-
+#Function which plots models divergence accross all nodes
 def plot_divergence(data, save_dir="experiments/results"):
     os.makedirs(save_dir, exist_ok=True)
 

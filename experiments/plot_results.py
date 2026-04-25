@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import LOG_DIR, RESULTS_DIR
 
-
+#Helper function to load nodes logs in json format
 def load_logs(log_dir="logs"):
     log_files = glob.glob(os.path.join(log_dir, "*.json"))
 
@@ -26,7 +26,7 @@ def load_logs(log_dir="logs"):
 
     return data
 
-
+#Function to plot models accuracy
 def plot_metrics(data, save_dir="experiments/results"):
     os.makedirs(save_dir, exist_ok=True)
 

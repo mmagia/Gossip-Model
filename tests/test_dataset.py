@@ -5,6 +5,7 @@ import torch
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from ml.dataset import get_dataloader  
 
+# unit tests for model datasets
 def test_non_iid_distribution():
     num_nodes = 5
     batch_size = 100

@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'
 from ml.aggregator import aggregate, calculate_mse
 from ml.model import SimpleCNN
 
-
+#Unit tests for model aggregator
 class TestAggregator(unittest.TestCase):
     def setUp(self):
         self.model_a = SimpleCNN()

@@ -1,6 +1,7 @@
 import torch
 import copy
 
+#Function to reflect peer_weights in the current model based on peer's accuracy
 def aggregate(local_model, peer_weights, alpha=0.5):
     local_weights = local_model.state_dict()
     new_weights = copy.deepcopy(local_weights)
@@ -13,6 +14,7 @@ def aggregate(local_model, peer_weights, alpha=0.5):
                 
     return new_weights
 
+#Function to calculate model mse
 def calculate_mse(weights_a, weights_b):
     total_mse = 0.0
     num_params = 0

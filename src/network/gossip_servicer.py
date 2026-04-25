@@ -3,7 +3,7 @@ import torch
 import gossip_pb2
 import gossip_pb2_grpc
 
-
+#Class which uses gRPC methods to provide a way for nodes to communicate over the network
 class GossipServicer(gossip_pb2_grpc.GossipNodeServicer):
     def __init__(self, node_instance):
         self.node = node_instance
