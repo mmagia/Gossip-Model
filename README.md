@@ -39,7 +39,7 @@ git clone git@github.com:mmagia/Gossip-Model.git
 ```bash
 docker compose up --build
 ```
-Once in a while centalized logging will happend, and you will see the batches of information provided by nodes in your terminal.
+Once in a while centalized logging will happen, and you will see the batches of information provided by nodes in your terminal.
 3. **After stopping the Docker Compose Containers containers plot the results in the diagrams:**
 ```bash
 python scripts/docker_collect.py
