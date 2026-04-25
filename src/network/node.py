@@ -153,7 +153,7 @@ class Node:
         next_gossip_interval = self._get_next_gossip_interval(gossip_interval)
 
         try:
-            print(f"[{self.node_id}] Start trainig...)
+            print(f"[{self.node_id}] Start trainig...")
             while True:
                 with self.model_lock:
                     loss = self.model.train_step(num_batches=1)
