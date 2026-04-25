@@ -9,6 +9,13 @@ Thus every peer is able to classify the whole dataset, and its accuracy converge
 * **Divergence Tracking:** Built-in monitoring of model discrepancy using MSE metrics.
 
 
+## Network Simulation & Robustness
+To validate the system under real-world conditions, the following parameters are simulated (see `src/config.py`):
+- **Packet Loss:** Artificial drops of gossip messages to test eventual convergence.
+- **Asynchronous Jitter:** Nodes communicate at slightly randomized intervals.
+- **Straggler Simulation:** Specific nodes (e.g., Node 2) are intentionally delayed to test the network's resilience to slow peers.
+
+
 ## Project Architecture
 
 ```text
@@ -47,3 +54,11 @@ Once in a while centalized logging will happen, and you will see the batches of 
 python scripts/docker_collect.py
 ```
 *Graphs will be saved in `experiments/results/`.*
+
+## Note on Data Persistence
+The following directories are used for data exchange between Docker and the Host machine:
+- `/logs`: Temporary storage for raw JSON metrics (cleared on each run).
+- `/experiments/results`: Target for generated plots (`.png`).
+- `/data`: MNIST dataset cache to avoid re-downloading on each container start.
+
+> **Note:** These directories are included in `.gitignore` to keep the repository clean. Results are meant to be generated locally after each experiment.

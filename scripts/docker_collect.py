@@ -8,28 +8,28 @@ import sys
 import glob
 import sys
 
-# Добавляем путь к src для импорта config
+# Dynamically add 'src' to PYTHONPATH to access global config and paths
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
-# Добавляем путь к experiments для импорта plot_results и analyze_divergence
+# Add 'experiments' to PYTHONPATH to import visualization utilities
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'experiments')))
 
-# Теперь импорты должны работать
+
 from config import LOG_DIR, RESULTS_DIR
 from plot_results import load_logs, plot_metrics
 from analyze_divergence import plot_divergence
 
 def collect_and_plot():
     """
-    Load all JSON metrics files from LOG_DIR, generate accuracy/loss/divergence plots.
-    Assumes Docker volumes mounted ./logs -> /app/logs.
+    Main entry point for data aggregation. 
+    Expects JSON logs to be present in the mounted LOG_DIR.
     """
-    # Check if log directory exists
+    # Safety check: Ensure the log directory exists before processing
     if not os.path.exists(LOG_DIR):
         print(f"❌ Directory {LOG_DIR} not found. Run 'docker-compose up' first.")
         return
 
-    # Find all node metrics files
+    # Identify all node metric files using glob patterns
     log_files = glob.glob(os.path.join(LOG_DIR, "node_*_metrics.json"))
     if not log_files:
         print(f"❌ No node_*_metrics.json files found in {LOG_DIR}")
@@ -37,7 +37,7 @@ def collect_and_plot():
 
     print(f"✅ Found {len(log_files)} log files")
     
-    # Load metrics using your existing utility
+    # Load raw JSON data into memory
     data = load_logs(LOG_DIR)
     
     if data:
