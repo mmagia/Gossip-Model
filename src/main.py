@@ -64,7 +64,6 @@ def run_node_process(node_id: int, port: str, peers: list, num_nodes: int = 5):
             )
             print(f"NODE {node_id} RESULT: Predicted {prediction} !!!", flush=True)
 
-            import time
             time.sleep(1)
 
         node.stop_server()

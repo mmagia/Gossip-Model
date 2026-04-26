@@ -32,7 +32,7 @@ class Node:
 
         self.model_lock = threading.Lock()
 
-        # Объект сервера gRPC
+        # gRPC server instance
         self.server = None
 
         self.gossip_attempts = 0
@@ -54,7 +54,7 @@ class Node:
         self.server.start()
 
     def stop_server(self):
-        """Корректная остановка сервера"""
+        """Graceful server shutdown"""
         if self.server:
             self.server.stop(0)
 
@@ -144,7 +144,7 @@ class Node:
                         self.model.model.load_state_dict(new_weights)
 
         except grpc.RpcError as e:
-            print(f"[Node {self.node_id}] Fail to connect with {peer}: status {e.code().name}")
+            print(f"[Node {self.node_id}] Failed to connect with {peer}: status {e.code().name}")
 
     def run(self, gossip_interval=5):
         self.start_server()
@@ -153,7 +153,7 @@ class Node:
         next_gossip_interval = self._get_next_gossip_interval(gossip_interval)
 
         try:
-            print(f"[{self.node_id}] Start trainig...")
+            print(f"[{self.node_id}] Starting training...")
             while True:
                 with self.model_lock:
                     loss = self.model.train_step(num_batches=1)
