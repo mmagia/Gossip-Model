@@ -47,6 +47,7 @@ git clone git@github.com:mmagia/Gossip-Model.git && cd Gossip-Model
 ```bash
 mkdir -p logs experiments/results data
 docker compose up --build
+```
 
 3. **After stopping the Docker Compose Containers they run trained models on validation images. To plot the results in the diagrams, execute the following command in your terminal:**
 ```bash
