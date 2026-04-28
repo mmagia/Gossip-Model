@@ -58,7 +58,7 @@ python scripts/docker_collect.py
 ## Note on Data Persistence
 The following directories are used for data exchange between Docker and the Host machine:
 - `/logs`: Temporary storage for raw JSON metrics (cleared on each run).
-- `/experiments/results`: Target for generated plots (`.png`).
+- `/experiments/results`: Target for generated plots and validation images (`.png`).
 - `/data`: MNIST dataset cache to avoid re-downloading on each container start.
 
 > **Note:** These directories are included in `.gitignore` to keep the repository clean. Results are meant to be generated locally after each experiment.
