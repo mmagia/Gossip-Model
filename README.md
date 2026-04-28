@@ -40,7 +40,7 @@ Gossip-Model/
 
 1. **Clone the repository:**
 ```bash
-git clone git@github.com:mmagia/Gossip-Model.git
+git clone git@github.com:mmagia/Gossip-Model.git && cd Gossip-Model
 ```
 
 2. **Build and start all nodes:**
