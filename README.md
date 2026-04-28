@@ -47,7 +47,7 @@ git clone git@github.com:mmagia/Gossip-Model.git && cd Gossip-Model
 ```bash
 docker compose up --build
 ```
-Once in a while centalized logging will happen, and you will see the batches of information provided by nodes in your terminal.
+After you launch the app you will see the batches of information provided by nodes in your terminal.
 
 3. **After stopping the Docker Compose Containers they run trained models on validation images. To plot the results in the diagrams, execute the following command in your terminal:**
 ```bash
