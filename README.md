@@ -61,4 +61,4 @@ The following directories are used for data exchange between Docker and the Host
 - `/experiments/results`: Target for generated plots and validation images (`.png`).
 - `/data`: MNIST dataset cache to avoid re-downloading on each container start.
 
-> **Note:** These directories are included in `.gitignore` to keep the repository clean. Results are meant to be generated locally after each experiment.
+> **Note:** These directories are included in `.gitignore` to keep the repository clean. Make sure to create them before running the actual code as it is meant to be configured locally. Otherwise, the results won't be saved correctly after the experiment.
