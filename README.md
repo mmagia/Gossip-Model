@@ -49,7 +49,7 @@ docker compose up --build
 ```
 Once in a while centalized logging will happen, and you will see the batches of information provided by nodes in your terminal.
 
-3. **After stopping the Docker Compose Containers containers plot the results in the diagrams:**
+3. **After stopping the Docker Compose Containers they run trained models on validation images. To plot the results in the diagrams, execute the following command in your terminal:**
 ```bash
 python scripts/docker_collect.py
 ```
